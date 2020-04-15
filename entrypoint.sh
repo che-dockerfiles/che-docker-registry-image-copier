@@ -6,6 +6,9 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
+
+set -e
+
 for image in $(echo $DOCKER_IMAGES | tr ',' '\n')
 do
   if [[ ! $image =~ (docker.io|quay.io).* ]]; then
@@ -14,7 +17,7 @@ do
   fi
   name=$(echo $image | cut -d '/' -f3)
 
-  echo "[INFO] Processing "$image
+  echo "[INFO] Copying "$image
   skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY_SERVICE}:${DOCKER_REGISTRY_PORT}/$name
 done
 echo "[INFO] Finished"
