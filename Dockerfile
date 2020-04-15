@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # Contributor: Robert Bohne <robert.bohne@redhat.com>
-# Based on https://github.com/RedHat-EMEA-SSA-Team/skopeo-ubi/blob/master/Dockerfilez
+# Based on https://github.com/RedHat-EMEA-SSA-Team/skopeo-ubi/blob/master/Dockerfile
 
 FROM registry.access.redhat.com/ubi8/go-toolset:latest as builder
 ENV SKOPEO_VERSION=v0.1.40
