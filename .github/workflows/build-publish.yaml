@@ -1,0 +1,39 @@
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Build and push container
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        dist: [ 'alpine', 'ubi' ]
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Clone source code
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: build and publish
+      run: |
+        ./build.sh ${{matrix.dist}}
+        docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" quay.io
+        ./publish.sh ${{matrix.dist}}
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
