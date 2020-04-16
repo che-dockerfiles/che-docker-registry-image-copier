@@ -7,6 +7,18 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-TAG=$(git rev-parse --short HEAD)
+BASE_IMAGE_NAME=${1:-alpine}
+COMMIT_HASH=$(git rev-parse --short HEAD)
 
-docker build -t quay.io/eclipse/che-docker-registry-image-copier:${TAG} .
+case $BASE_IMAGE_NAME in
+    'alpine')
+        docker build -t quay.io/eclipse/che-docker-registry-image-copier:${BASE_IMAGE_NAME}-${COMMIT_HASH} -f Dockerfile .
+        ;;
+    'ubi')
+        docker build -t quay.io/eclipse/che-docker-registry-image-copier:${BASE_IMAGE_NAME}-${COMMIT_HASH} -f rhel.Dockerfile .
+        ;;
+    *)
+        echo "Invalid base image \"${BASE_IMAGE_NAME}\" specified."
+        exit 1
+        ;;
+esac
