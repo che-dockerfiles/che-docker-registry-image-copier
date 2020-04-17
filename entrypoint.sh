@@ -9,7 +9,6 @@
 
 set -e
 
-skopeo
 for image in $(echo $DOCKER_IMAGES | tr ',' '\n')
 do
   if [[ ! $image =~ (docker.io|quay.io).* ]]; then

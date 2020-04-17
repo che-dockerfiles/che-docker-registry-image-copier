@@ -10,7 +10,7 @@
 
 FROM alpine:3.11.5
 
-RUN apk add --update --no-cache skopeo
+RUN apk add --update --no-cache bash skopeo
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
