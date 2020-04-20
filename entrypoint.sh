@@ -18,6 +18,6 @@ do
   name=$(echo $image | cut -d '/' -f3)
 
   echo "[INFO] Copying "$image
-  skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY_SERVICE}:${DOCKER_REGISTRY_PORT}/$name
+  skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY}/$name
 done
 echo "[INFO] Finished"
