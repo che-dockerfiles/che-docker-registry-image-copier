@@ -7,8 +7,6 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-set -e
-
 for image in $(echo $DOCKER_IMAGES | tr ',' '\n')
 do
   if [[ ! $image =~ (docker.io|quay.io).* ]]; then
@@ -18,6 +16,15 @@ do
   name=$(echo $image | cut -d '/' -f3)
 
   echo "[INFO] Copying "$image
-  skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY}/$name
+
+  n=0
+  until [ $n -ge 3 ]
+  do
+    skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY}/$name && break
+    n=$[$n+1]
+    echo "[ERROR] Failed to copy "$image
+    echo "[ERROR] Try "$n" of 3"
+    sleep 5s
+  done
 done
 echo "[INFO] Finished"
