@@ -18,12 +18,13 @@ do
   echo "[INFO] Copying "$image
 
   n=0
-  until [ $n -ge 3 ]
+  max=5
+  until [ $n -ge $max ]
   do
     skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY}/$name && break
     n=$[$n+1]
     echo "[ERROR] Failed to copy "$image
-    echo "[ERROR] Try "$n" of 3"
+    echo "[ERROR] Try "$n" of "$max" in 5 seconds"
     sleep 5s
   done
 done
