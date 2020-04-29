@@ -10,27 +10,30 @@
 echo "[INFO] Docker registry host name: "${DOCKER_REGISTRY}
 for image in $(echo $DOCKER_IMAGES | tr ',' '\n')
 do
-  if [[ ! $image =~ (docker.io|quay.io).* ]]; then
-    echo "[INFO] "$image" prefix not found. Added default: docker.io"
-    image=docker.io/$image
-  fi
-  name=$(echo $image | cut -d '/' -f2-)
+  echo "[INFO] Inspecting: "$image
 
-  echo "[INFO] Copying: "$image
+  TAG=$(echo $image | rev | cut -d ':' -f1 | rev)
+  NAME=$(skopeo inspect docker://$image | grep "\"Name\":" | cut -d ':' -f2 | sed 's/"//g' | sed 's/,//g' | sed 's/^ *//;s/ *$//')
+  SOURCE=$NAME:$TAG
+
+  NAME_WITHOUT_REPOSITORY=$(echo $NAME | cut -d '/' -f2-)
+  DESTINATION=$NAME_WITHOUT_REPOSITORY:$TAG
+
+  echo "[INFO] Copying: "$SOURCE
 
   n=0
   max=5
   until [ $n -ge $max ]
   do
-    skopeo copy --dest-tls-verify=false --format=v2s2 docker://$image docker://${DOCKER_REGISTRY}/$name && break
+    skopeo copy --dest-tls-verify=false --format=v2s2 docker://$SOURCE docker://${DOCKER_REGISTRY}/$DESTINATION && break
     n=$[$n+1]
-    echo "[ERROR] Failed to copy: "$image
+    echo "[ERROR] Failed to copy: "$SOURCE
     echo "[ERROR] Try "$n" of "$max" in 3 seconds"
     sleep 3s
   done
 
   if [[ $n == $[$max] ]]; then
-    echo "[ERROR] Fatal error. Failed to copy: "$image
+    echo "[ERROR] Fatal error. Failed to copy: "$SOURCE
     exit 1
   fi
 
